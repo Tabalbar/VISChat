@@ -1,10 +1,5 @@
 import "./globals.css";
 
-export const metadata = {
-  title: "It Works",
-  description: "Basic layout test",
-};
-
 export default function RootLayout({
   children,
 }: {
@@ -12,8 +7,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body style={{ background: "lightyellow" }}>
-        <div>🌟 Layout is rendering...</div>
+      <body>
+        <header style={{ backgroundColor: "#f0f0f0", padding: 16 }}>
+          Layout loaded ✅
+        </header>
         {children}
       </body>
     </html>
