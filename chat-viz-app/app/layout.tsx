@@ -1,17 +1,21 @@
-// app/layout.tsx
-
 import "./globals.css";
-import { ReactNode } from "react";
 
 export const metadata = {
-  title: "Chat Viz App",
-  description: "Chat with AI to generate charts",
+  title: "It Works",
+  description: "Basic layout test",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body style={{ background: "lightyellow" }}>
+        <div>🌟 Layout is rendering...</div>
+        {children}
+      </body>
     </html>
   );
 }
