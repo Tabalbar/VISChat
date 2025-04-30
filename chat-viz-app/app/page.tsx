@@ -5,11 +5,14 @@ export const dynamic = "force-static"; // force static rendering (optional)
 
 export default function Home() {
   const handleClick = async () => {
-    const res = await fetch("http://localhost:8500/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: "Hello World" }),
-    });
+    const res = await fetch(
+      "https://my-python-server-latest.onrender.com/chat",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: "Hello World" }),
+      }
+    );
 
     const data = await res.json();
     console.log(data);
