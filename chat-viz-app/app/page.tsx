@@ -4,39 +4,49 @@ import React, { useState } from "react";
 export const dynamic = "force-static"; // optional
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState<{ sender: string; text: string }[]>(
-    []
+  /**
+   * [
+    {"role": "developer", "content": "You are a helpful assistant."},
+    {"role": "user", "content": "Hello!"}
+  ]
+   */
+  const [messages, setMessages] = useState<{ role: string; content: string }[]>(
+    [
+      { role: "developer", content: "You are a helpful assistant." },
+      { role: "user", content: "Hello!" },
+    ]
   );
   const [input, setInput] = useState("");
 
   const handleSend = async () => {
     if (!input.trim()) return;
 
-    const userMessage = { sender: "You", text: input };
+    const userMessage = { role: "user", content: input };
     setMessages((prev) => [...prev, userMessage]);
-
+    console.log(JSON.stringify({ messages: messages }));
     try {
       const res = await fetch(
+        // "http://localhost:8500/chat",
         "https://my-python-server-latest.onrender.com/chat",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: input }),
+          body: JSON.stringify({ messages: messages }),
         }
       );
 
       const data = await res.json();
       console.log(data);
       const botMessage = {
-        sender: "Bot",
-        text: data.reply || "No response",
+        role: "assistant",
+        content: data.reply || "No response",
       };
       setMessages((prev) => [...prev, botMessage]);
     } catch (err) {
       console.error(err);
       setMessages((prev) => [
         ...prev,
-        { sender: "Bot", text: "Error connecting to server." },
+        { role: "assistant", content: "Error connecting to server." },
       ]);
     }
 
@@ -82,8 +92,8 @@ export default function ChatPage() {
         >
           {messages.map((msg, index) => (
             <div key={index} style={{ margin: "5px 0" }}>
-              <strong>{msg.sender}: </strong>
-              <span>{msg.text}</span>
+              <strong>{msg.role}: </strong>
+              <span>{msg.content}</span>
             </div>
           ))}
         </div>
