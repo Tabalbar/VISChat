@@ -1,28 +1,121 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 
-export const dynamic = "force-static"; // force static rendering (optional)
+export const dynamic = "force-static"; // optional
 
-export default function Home() {
-  const handleClick = async () => {
-    const res = await fetch(
-      "https://my-python-server-latest.onrender.com/chat",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: "Hello World" }),
-      }
-    );
+export default function ChatPage() {
+  const [messages, setMessages] = useState<{ sender: string; text: string }[]>(
+    []
+  );
+  const [input, setInput] = useState("");
 
-    const data = await res.json();
-    console.log(data);
+  const handleSend = async () => {
+    if (!input.trim()) return;
+
+    const userMessage = { sender: "You", text: input };
+    setMessages((prev) => [...prev, userMessage]);
+
+    try {
+      const res = await fetch(
+        "https://my-python-server-latest.onrender.com/chat",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: input }),
+        }
+      );
+
+      const data = await res.json();
+      console.log(data);
+      const botMessage = {
+        sender: "Bot",
+        text: data.reply || "No response",
+      };
+      setMessages((prev) => [...prev, botMessage]);
+    } catch (err) {
+      console.error(err);
+      setMessages((prev) => [
+        ...prev,
+        { sender: "Bot", text: "Error connecting to server." },
+      ]);
+    }
+
+    setInput("");
   };
 
   return (
-    <main style={{ padding: 40 }}>
-      <h1>Hello from App Router 🎉</h1>
-      <p>This is Teyanni Esaki`s Page!</p>
-      <button onClick={handleClick}>Click Me</button>
+    <main
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#f7f7f7",
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "90vw",
+          backgroundColor: "white",
+          padding: 20,
+          borderRadius: 10,
+          boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <h2 style={{ textAlign: "center", marginBottom: 20 }}>
+          Hawaii Climate Data Portal
+        </h2>
+        <div
+          style={{
+            flexGrow: 1,
+            minHeight: "70vh",
+            maxHeight: 500,
+            overflowY: "auto",
+            marginBottom: 10,
+            border: "1px solid #ddd",
+            padding: 10,
+            borderRadius: 6,
+          }}
+        >
+          {messages.map((msg, index) => (
+            <div key={index} style={{ margin: "5px 0" }}>
+              <strong>{msg.sender}: </strong>
+              <span>{msg.text}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: "flex", gap: 10 }}>
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            placeholder="Type your message..."
+            style={{
+              flexGrow: 1,
+              padding: 10,
+              borderRadius: 6,
+              border: "1px solid #ccc",
+            }}
+          />
+          <button
+            onClick={handleSend}
+            style={{
+              padding: "10px 16px",
+              borderRadius: 6,
+              backgroundColor: "#0070f3",
+              color: "white",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            Send
+          </button>
+        </div>
+      </div>
     </main>
   );
 }
