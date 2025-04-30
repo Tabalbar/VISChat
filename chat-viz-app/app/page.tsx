@@ -11,10 +11,7 @@ export default function ChatPage() {
   ]
    */
   const [messages, setMessages] = useState<{ role: string; content: string }[]>(
-    [
-      { role: "developer", content: "You are a helpful assistant." },
-      { role: "user", content: "Hello!" },
-    ]
+    [{ role: "system", content: "You are a helpful assistant." }]
   );
   const [input, setInput] = useState("");
 
@@ -22,8 +19,7 @@ export default function ChatPage() {
     if (!input.trim()) return;
 
     const userMessage = { role: "user", content: input };
-    setMessages((prev) => [...prev, userMessage]);
-    console.log(JSON.stringify({ messages: messages }));
+    const tmpMessages = [...messages, userMessage];
     try {
       const res = await fetch(
         // "http://localhost:8500/chat",
@@ -31,7 +27,7 @@ export default function ChatPage() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: messages }),
+          body: JSON.stringify({ messages: tmpMessages }),
         }
       );
 
@@ -41,7 +37,8 @@ export default function ChatPage() {
         role: "assistant",
         content: data.reply || "No response",
       };
-      setMessages((prev) => [...prev, botMessage]);
+      tmpMessages.push(botMessage);
+      setMessages(tmpMessages);
     } catch (err) {
       console.error(err);
       setMessages((prev) => [

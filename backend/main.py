@@ -5,9 +5,22 @@ from openai import OpenAI
 import os
 from dotenv import load_dotenv
 
-load_dotenv()  # Load variables from .env
+# Load environment variables from .env in production (Render)
+# and from local .env if not already set (for local dev)
+dotenv_path = "/etc/secrets/.env"
+print("ENV found:", os.getenv("OPENAI_API_KEY"))
+print("Does .env exist?", os.path.exists("/etc/secrets/.env"))
 
-OpenAI.api_key = os.getenv("OPENAI_API_KEY")
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
+else:
+    load_dotenv()  # Fallback for local dev
+
+# Access the API key
+openai_api_key = os.getenv("OPENAI_API_KEY")
+if not openai_api_key:
+    raise RuntimeError("OPENAI_API_KEY is not set")
+
 app = FastAPI()
 client = OpenAI()
 
@@ -36,11 +49,15 @@ class ChatRequest(BaseModel):
 
 @app.post("/chat")
 async def chat_handler(req: ChatRequest):
-    print(req)
+    # print(req.messages)
+    # Convert Pydantic models to dicts for OpenAI client
+    message_dicts = [msg.model_dump() for msg in req.messages]
+
     completion = client.chat.completions.create(
         model="gpt-4.1",
-        messages=req.messages,
+        messages=message_dicts,
     )
+    print(completion.choices)
     # Replace this with chart/LLM logic
     return {
         "reply": f"{completion.choices[0].message.content}",
