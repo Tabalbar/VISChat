@@ -21,7 +21,7 @@ export default function Home() {
   return (
     <main style={{ padding: 40 }}>
       <h1>Hello from App Router 🎉</h1>
-      <p>If you see this, the homepage is rendering correctly.</p>
+      <p>This is Teyanni Esaki's Page!</p>
       <button onClick={handleClick}>Click Me</button>
     </main>
   );
