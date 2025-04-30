@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { SYSTEM_PROMPT } from "./context";
 
 export const dynamic = "force-static"; // optional
 
@@ -11,7 +12,7 @@ export default function ChatPage() {
   ]
    */
   const [messages, setMessages] = useState<{ role: string; content: string }[]>(
-    [{ role: "system", content: "You are a helpful assistant." }]
+    [{ role: "system", content: SYSTEM_PROMPT }]
   );
   const [input, setInput] = useState("");
 
@@ -37,6 +38,7 @@ export default function ChatPage() {
         role: "assistant",
         content: data.reply || "No response",
       };
+
       tmpMessages.push(botMessage);
       setMessages(tmpMessages);
     } catch (err) {
